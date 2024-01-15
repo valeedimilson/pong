@@ -1,6 +1,12 @@
 const fps = 24;
 let jogoRodando = false;
 
+const jogadorAutomaticoAtivado = () => {
+  return localStorage.getItem("jogadorAutomatico") == null
+    ? "false"
+    : localStorage.getItem("jogadorAutomatico");
+};
+
 const pontuacao = document.querySelector("#pontuacao");
 
 const orientacao = document.querySelector(".comandos");
@@ -22,7 +28,7 @@ const bolinhaPosicaoInicial = [
   telaTotalQuadradosLargura / 2 - bolinhaTamanho / 2,
   telaTotalQuadradosAltura / 4 - bolinhaTamanho / 2,
 ];
-const bolinhaPosicao = Array.from(bolinhaPosicaoInicial);
+const bolinhaPosicao = [...bolinhaPosicaoInicial];
 
 class jogador {
   constructor(objeto, tamanhoX, tamanhoY, posicaoX, posicaoY) {
@@ -56,6 +62,9 @@ function desenhaTela() {
   }
   tela.style.gridTemplateColumns = `Repeat(${telaTotalQuadradosLargura}, ${telaTamanhoBloco}px)`;
   tela.style.gridTemplateRows = `Repeat(${telaTotalQuadradosAltura}, ${telaTamanhoBloco}px)`;
+
+  document.querySelector("#btJogadorAutomatico").innerText =
+    jogadorAutomaticoAtivado() == "true" ? "Ligado" : "Desligado";
 }
 
 function desenhaBolinha() {
@@ -74,7 +83,7 @@ function desenhaJogador(jogador) {
   jogador.objeto.style.gridRow = jogador.posicaoY;
 }
 
-function direcaoAleatoria() {
+function numeroAleatorio() {
   return Math.round(Math.random()) * 1;
 }
 
@@ -104,9 +113,10 @@ function checaColisao() {
       ) {
         //console.log("colidiu com o jogador 1");
         bolinhaDirecaoY = -bolinhaDirecaoY;
-        if (direcaoAleatoria == 1) {
+
+        /* if (numeroAleatorio() == 1) {
           bolinhaDirecaoX = -bolinhaDirecaoX;
-        }
+        } */
       }
     }
 
@@ -118,9 +128,9 @@ function checaColisao() {
         //console.log("colidiu com o jogador 2");
         bolinhaDirecaoY = -bolinhaDirecaoY;
 
-        if (direcaoAleatoria == 1) {
+        /* if (numeroAleatorio() == 1) {
           bolinhaDirecaoX = -bolinhaDirecaoX;
-        }
+        } */
       }
     }
 
@@ -133,8 +143,6 @@ function checaColisao() {
 }
 
 function moveBolinha() {
-  //console.log(direcaoAleatoria());
-
   bolinhaPosicao[0] = bolinhaPosicao[0] + bolinhaDirecaoX;
   bolinhaPosicao[1] = bolinhaPosicao[1] + bolinhaDirecaoY;
 }
@@ -158,6 +166,8 @@ function moveJogador(jogador, direcao) {
 }
 
 function lidaComEntrada(event) {
+  console.log(event.key);
+
   switch (event.key) {
     case "ArrowLeft":
       moveJogador(jogador1, "esquerda");
@@ -182,7 +192,50 @@ function lidaComEntrada(event) {
       break;
   }
 }
+
+let entradaMovelPosAnterior = 0;
+function lidaComEntradaMovel(event) {
+  if (entradaMovelPosAnterior > event.touches[0].clientX) {
+    moveJogador(jogador1, "esquerda");
+  } else if (entradaMovelPosAnterior < event.touches[0].clientX) {
+    moveJogador(jogador1, "direita");
+  }
+  entradaMovelPosAnterior = event.touches[0].clientX;
+}
+
+function pausaJogo() {
+  jogoRodando = jogoRodando ? false : true;
+
+  this.innerHTML = jogoRodando ? "Pausa Jogo" : "Retoma Jogo";
+}
+
+document.querySelector("#btPausaJogo").addEventListener("click", pausaJogo);
+
 document.addEventListener("keydown", lidaComEntrada);
+document.addEventListener("keyup", lidaComEntrada);
+document.addEventListener("touchmove", lidaComEntradaMovel);
+
+function jogadorAutomatico(jogador) {
+  if (jogadorAutomaticoAtivado() == "true") {
+    if (numeroAleatorio() > 0) {
+      if (jogador.posicaoX < bolinhaPosicao[0]) {
+        moveJogador(jogador, "direita");
+      } else if (jogador.posicaoX > bolinhaPosicao[0]) {
+        moveJogador(jogador, "esquerda");
+      }
+    }
+  }
+}
+
+function ligaDesligaJogadorAutomatico() {
+  localStorage.setItem(
+    "jogadorAutomatico",
+    jogadorAutomaticoAtivado() == "true" ? "false" : "true"
+  );
+}
+document
+  .querySelector("#btJogadorAutomatico")
+  .addEventListener("click", ligaDesligaJogadorAutomatico);
 
 setInterval(() => {
   desenhaTela();
@@ -195,5 +248,8 @@ setInterval(() => {
     moveBolinha();
 
     checaColisao();
+
+    jogadorAutomatico(jogador2);
+    //jogadorAutomatico(jogador1);
   }
 }, 1000 / fps);

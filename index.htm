@@ -8,8 +8,9 @@
   </head>
   <body>
     <div id="pontuacao">
-      Jogador1: <span>0</span> | Jogador2:
-      <span>0</span>
+      Jogador1: <span>0</span> | Jogador2: <span>0</span> | Jogar contra CPU:
+      <button id="btJogadorAutomatico">Desligado</button> |
+      <button id="btPausaJogo">Iniciar Jogo</button>
     </div>
     <div id="tela">
       <div id="bolinha"></div>
@@ -18,17 +19,29 @@
     </div>
     <div class="comandos">
       <h1>Como Jogar:</h1>
-      <div>
-        <span>Jogador1:</span> <br />
-        Seta Esquerda e Seta direita
+      <div class="comandos_pc">
+        <div>
+          <span>Jogador1:</span> <br />
+          Seta Esquerda e Seta direita
+        </div>
+        <div>
+          <span>Jogador2:</span><br />
+          Tecla A e Tecla D
+        </div>
+        <div>
+          <span>Iniciar / Pausar Jogo:</span><br />
+          Tecla P
+        </div>
       </div>
-      <div>
-        <span>Jogador2:</span><br />
-        Tecla A e Tecla D
-      </div>
-      <div>
-        <span>Iniciar / Pausar Jogo:</span><br />
-        Tecla P
+      <div class="comandos_celular">
+        <div>
+          <span>Jogador1:</span> <br />
+          Toque na tela e arraste para direita ou esquerda.
+        </div>
+        <div>
+          <span>Iniciar / Pausar Jogo:</span><br />
+          Clique no botão Iniciar/Pausar a cima.
+        </div>
       </div>
     </div>
   </body>
